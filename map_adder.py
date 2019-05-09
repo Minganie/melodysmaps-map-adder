@@ -264,11 +264,14 @@ class MapAdder:
         raster = self.rasters[self.dlg.rasterCombo.currentIndex()]
         table = self.vectors[self.dlg.tableCombo.currentIndex()]
         extent = raster.layer().extent()
-        geom = QgsGeometry.fromPolygonXY([self.extentToPoints(extent)])
-        return (name, raster, table, geom)
+        crsSrc = raster.layer().crs()
+        crsDest = QgsCoordinateReferenceSystem(4326)
+        xform = QgsCoordinateTransform(crsSrc, crsDest, QgsProject.instance())
+        rect = xform.transformBoundingBox(extent)
+        return (name, raster, table, QgsGeometry.fromPolygonXY([self.extentToPoints(rect)]))
     
     def mapIsAlreadyThere(self, table, name):
-        fr = QgsFeatureRequest().setFilterExpression ('"name" = \'{}\''.format(name))
+        fr = QgsFeatureRequest().setFilterExpression ('"name" = \'{}\''.format(name.replace("'", "''")))
         feats = [feat for feat in table.layer().getFeatures(fr)]
         if len(feats) == 0:
             return False
