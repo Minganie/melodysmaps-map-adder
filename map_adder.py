@@ -222,6 +222,10 @@ class MapAdder:
                 if onMap == False:
                     feat = QgsFeature(table.layer().fields())
                     feat.setAttribute("name", name)
+                    feat.setAttribute("a", 1.0)
+                    feat.setAttribute("b", 21.4)
+                    feat.setAttribute("e", 1.0)
+                    feat.setAttribute("f", 21.4)
                     feat.setGeometry(geom)
                     table.layer().dataProvider().addFeatures([feat])
                 else:
